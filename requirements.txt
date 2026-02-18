@@ -1,0 +1,8 @@
+flask
+onnxruntime
+numpy
+Pillow
+# opencv-python  <-- Removed to save space
+# matplotlib     <-- Removed to save space
+# pandas         <-- Removed to save space
+# scikit-learn   <-- Removed to save space

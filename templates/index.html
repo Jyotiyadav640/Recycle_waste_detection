@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EcoSort - Waste Classification</title>
+    <style>
+        /* 🌿 Background Styling */
+        body {
+            font-family: "Poppins", sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #b2f7b9, #e0fbe2);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 🌍 EcoSort Header */
+        h1 {
+            color: #1b5e20;
+            font-size: 2.5em;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        }
+
+        h3 {
+            color: #2e7d32;
+            font-weight: 500;
+            margin-bottom: 40px;
+        }
+
+        /* 📦 Main Container */
+        .container {
+            background: linear-gradient(160deg, #d9fdd3, #bdf2c3);
+            border-radius: 20px;
+            padding: 40px 50px;
+            width: 450px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.3);
+        }
+
+        /* 📁 File Input Custom Button */
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .upload-btn {
+            background-color: #43a047;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            border: none;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .upload-btn:hover {
+            background-color: #2e7d32;
+            transform: scale(1.05);
+        }
+
+        /* 🧩 Predict Button */
+        input[type="submit"] {
+            background-color: #2e7d32;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            margin-top: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #1b5e20;
+            transform: scale(1.05);
+        }
+
+        /* 📊 Prediction Text */
+        h2 {
+            margin-top: 25px;
+            font-weight: bold;
+            color: #1b5e20;
+            font-size: 1.3em;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px 20px;
+            border-radius: 10px;
+            display: inline-block;
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 🖼 Uploaded Image */
+        img {
+            margin-top: 20px;
+            width: 230px;
+            border-radius: 15px;
+            border: 3px solid #66bb6a;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            animation: fadeIn 1s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <h1>EcoSort ♻️</h1>
+    <h3>Classify your waste as Organic or Recyclable</h3>
+
+    <!-- Main Container -->
+    <div class="container">
+        <form action="/predict" method="post" enctype="multipart/form-data">
+            <div class="file-upload">
+                <button class="upload-btn" type="button" onclick="document.getElementById('fileInput').click()">📁 Choose Image</button>
+                <input type="file" id="fileInput" name="file" accept="image/*" required>
+            </div>
+            <br>
+            <input type="submit" value="🔍 Predict">
+        </form>
+
+        {% if prediction %}
+            <h2>{{ prediction }}</h2>
+        {% endif %}
+
+        {% if image_path %}
+            <img src="{{ image_path }}" alt="Uploaded Image">
+        {% endif %}
+       {% if prediction %}
+  <br><br>
+  <button onclick="proceedToApp()"
+          style="padding:12px 24px;
+                 background:#2e7d32;
+                 color:white;
+                 border:none;
+                 border-radius:8px;
+                 font-size:15px;
+                 cursor:pointer;">
+    ✅ Proceed
+  </button>
+{% endif %}
+
+
+    </div>
+
+
+    <script>
+  function proceedToApp() {
+    //if (window.Flutter) {
+     // Flutter.postMessage("proceed");
+
+      const img = document.querySelector("img");
+
+    if (!img) {
+      alert("Image not found");
+      return;
+    }
+
+    const imagePath = img.getAttribute("src"); // /uploads/xxx.jpg
+
+    if (window.Flutter) {
+      Flutter.postMessage("proceed|" + imagePath);
+    } else {
+      alert("Flutter channel not available");
+    }
+    }
+//}
+</script>
+
+</body>
+</html>
