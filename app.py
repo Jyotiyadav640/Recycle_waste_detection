@@ -1,7 +1,7 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 from flask import Flask, render_template, request, send_from_directory
-from keras.models import load_model
+# from keras.models import load_model # Removed to avoid dependency errors on Vercel
 from flask import jsonify
 
 # from keras.preprocessing import image # Removed
@@ -10,10 +10,28 @@ from PIL import Image
 app = Flask(__name__, template_folder='templates', static_folder='app/static')
 # from keras.models import load_model # Removed for Vercel size limit
 import onnxruntime as ort
+import os
 
-MODEL_PATH = 'model/best_model.onnx'
+# Use absolute path for model to avoid path errors on Vercel
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, 'model', 'best_model.onnx')
+
+print(f"DEBUG: Looking for model at {MODEL_PATH}")
+if os.path.exists(MODEL_PATH):
+    print(f"DEBUG: Model file found. Size: {os.path.getsize(MODEL_PATH)} bytes")
+else:
+    print("DEBUG: CRITICAL - MODEL FILE NOT FOUND at path!")
+
 # Initialize ONNX Runtime Session
-model_session = ort.InferenceSession(MODEL_PATH)
+try:
+    model_session = ort.InferenceSession(MODEL_PATH)
+    print("DEBUG: Model loaded successfully!")
+except Exception as e:
+    print(f"DEBUG: Failed to load model: {e}")
+    # Initialize dummy session or None to prevent immediate import crash, 
+    # but requests will fail.
+    model_session = None
+
 import tempfile
 
 # Use /tmp for Vercel (read-only filesystem)
@@ -47,6 +65,9 @@ def predict():
     img_array = img_array / 255.0
     
     # Run Inference using ONNX
+    if model_session is None:
+        return jsonify({'error': 'Model not loaded on server'}), 500
+
     input_name = model_session.get_inputs()[0].name
     output_name = model_session.get_outputs()[0].name
     
@@ -91,6 +112,9 @@ def api_predict():
     print("📸 File received:", file.filename)
 
     # Run Inference using ONNX
+    if model_session is None:
+        return render_template('index.html', prediction="Error: Model could not be loaded on server.")
+        
     input_name = model_session.get_inputs()[0].name
     output_name = model_session.get_outputs()[0].name
     prediction = model_session.run([output_name], {input_name: img_array.astype(np.float32)})[0][0][0]
