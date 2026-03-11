@@ -32,9 +32,14 @@ except Exception as e:
     # but requests will fail.
     model_session = None
 
-# Cross-platform upload folder (uploads directory in current working directory)
-UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# Detect Vercel environment
+if os.environ.get('VERCEL'):
+    UPLOAD_FOLDER = '/tmp'
+else:
+    # Local Windows/Linux path
+    UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 @app.route('/')
 def home():
