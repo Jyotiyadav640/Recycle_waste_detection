@@ -32,11 +32,9 @@ except Exception as e:
     # but requests will fail.
     model_session = None
 
-import tempfile
-
-# Use /tmp for Vercel (read-only filesystem)
-UPLOAD_FOLDER = '/tmp'
-# os.makedirs(UPLOAD_FOLDER, exist_ok=True) # /tmp always exists
+# Cross-platform upload folder (uploads directory in current working directory)
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 @app.route('/')
 def home():

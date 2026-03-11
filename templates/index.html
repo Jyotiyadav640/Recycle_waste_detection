@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EcoSort - Waste Classification</title>
     <style>
         /* 🌿 Background Styling */
@@ -9,13 +11,14 @@
             font-family: "Poppins", sans-serif;
             text-align: center;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             background: linear-gradient(135deg, #b2f7b9, #e0fbe2);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            box-sizing: border-box;
         }
 
         /* 🌍 EcoSort Header */
@@ -23,7 +26,7 @@
             color: #1b5e20;
             font-size: 2.5em;
             margin-bottom: 5px;
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         h3 {
@@ -36,15 +39,17 @@
         .container {
             background: linear-gradient(160deg, #d9fdd3, #bdf2c3);
             border-radius: 20px;
-            padding: 40px 50px;
-            width: 450px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-sizing: border-box;
         }
 
         .container:hover {
             transform: translateY(-6px);
-            box-shadow: 0 12px 25px rgba(0,0,0,0.3);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
         }
 
         /* 📁 File Input Custom Button */
@@ -53,6 +58,7 @@
             display: inline-block;
             overflow: hidden;
             margin-bottom: 15px;
+            width: 100%;
         }
 
         .file-upload input[type="file"] {
@@ -75,11 +81,13 @@
             font-weight: 500;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .upload-btn:hover {
             background-color: #2e7d32;
-            transform: scale(1.05);
+            transform: scale(1.02);
         }
 
         /* 🧩 Predict Button */
@@ -93,11 +101,13 @@
             font-size: 15px;
             margin-top: 10px;
             transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         input[type="submit"]:hover {
             background-color: #1b5e20;
-            transform: scale(1.05);
+            transform: scale(1.02);
         }
 
         /* 📊 Prediction Text */
@@ -110,25 +120,68 @@
             padding: 10px 20px;
             border-radius: 10px;
             display: inline-block;
+            width: 100%;
+            box-sizing: border-box;
             animation: fadeIn 0.8s ease;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* 🖼 Uploaded Image */
         img {
             margin-top: 20px;
-            width: 230px;
+            width: 100%;
+            max-width: 230px;
             border-radius: 15px;
             border: 3px solid #66bb6a;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             animation: fadeIn 1s ease;
+        }
+
+        .proceed-btn {
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s ease;
+        }
+
+        .proceed-btn:hover {
+            background: #1b5e20;
+        }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 30px 20px;
+            }
+
+            h2 {
+                font-size: 1.1em;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <!-- Header -->
@@ -139,7 +192,8 @@
     <div class="container">
         <form action="/predict" method="post" enctype="multipart/form-data">
             <div class="file-upload">
-                <button class="upload-btn" type="button" onclick="document.getElementById('fileInput').click()">📁 Choose Image</button>
+                <button class="upload-btn" type="button" onclick="document.getElementById('fileInput').click()">📁
+                    Choose Image</button>
                 <input type="file" id="fileInput" name="file" accept="image/*" required>
             </div>
             <br>
@@ -147,52 +201,37 @@
         </form>
 
         {% if prediction %}
-            <h2>{{ prediction }}</h2>
+        <h2>{{ prediction }}</h2>
         {% endif %}
 
         {% if image_path %}
-            <img src="{{ image_path }}" alt="Uploaded Image">
+        <img src="{{ image_path }}" alt="Uploaded Image">
         {% endif %}
-       {% if prediction %}
-  <br><br>
-  <button onclick="proceedToApp()"
-          style="padding:12px 24px;
-                 background:#2e7d32;
-                 color:white;
-                 border:none;
-                 border-radius:8px;
-                 font-size:15px;
-                 cursor:pointer;">
-    ✅ Proceed
-  </button>
-{% endif %}
 
-
+        {% if prediction %}
+        <button class="proceed-btn" onclick="proceedToApp()">✅ Proceed</button>
+        {% endif %}
     </div>
 
-
     <script>
-  function proceedToApp() {
-    //if (window.Flutter) {
-     // Flutter.postMessage("proceed");
+        function proceedToApp() {
+            const img = document.querySelector("img");
+            if (!img) {
+                alert("Image not found");
+                return;
+            }
 
-      const img = document.querySelector("img");
+            const imagePath = img.getAttribute("src");
 
-    if (!img) {
-      alert("Image not found");
-      return;
-    }
-
-    const imagePath = img.getAttribute("src"); // /uploads/xxx.jpg
-
-    if (window.Flutter) {
-      Flutter.postMessage("proceed|" + imagePath);
-    } else {
-      alert("Flutter channel not available");
-    }
-    }
-//}
-</script>
+            if (window.Flutter) {
+                Flutter.postMessage("proceed|" + imagePath);
+            } else {
+                console.log("Proceeding with image:", imagePath);
+                alert("Proceeding! (Flutter channel not detected)");
+            }
+        }
+    </script>
 
 </body>
+
 </html>
